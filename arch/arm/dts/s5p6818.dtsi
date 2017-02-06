@@ -7,6 +7,8 @@
 
 #include "skeleton.dtsi"
 / {
+	#include "s5p6818-pinctrl.dtsi"
+
 	aliases {
 		mmc0 = "/mmc0:mmc@c0062000";
 		mmc1 = "/mmc1@c0068000";
@@ -48,6 +50,9 @@
 		compatible = "nexell,nexell-gmac";
 		reg = <0xc0060000 0x8000>;
 		phy-mode = "rgmii";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gmac_txd>, <&gmac_rxd>, <&gmac_txen>,
+			<&gmac_mdc>, <&gmac_mdio>, <&gmac_rxclk>, <&gmac_txclk>;
 		status = "disabled";
 	};
 
@@ -103,6 +108,14 @@
 			compatible = "samsung,exynos-usb-phy";
 			reg = <0 0xC0011000>;
 		};
+	};
+
+	dwc2otg@c0040000 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "nexell,dwc2";
+		reg = <0xC0011000 0x100>, <0xC0040000 0x11000>;
+		status = "disabled";
 	};
 
 	gpio_a:gpio@c001a000 {

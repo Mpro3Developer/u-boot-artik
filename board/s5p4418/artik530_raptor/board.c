@@ -10,10 +10,7 @@
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
-#include <asm/arch/tieoff.h>
 
 #ifdef CONFIG_DM_PMIC_NXE2000
 #include <dm.h>
@@ -24,7 +21,6 @@
 
 #ifdef CONFIG_USB_GADGET
 #include <usb.h>
-#include <usb/dwc2_udc.h>
 #endif
 
 #ifdef CONFIG_SENSORID_ARTIK
@@ -63,6 +59,15 @@ static void set_board_rev(u32 revision)
 
 	snprintf(info, ARRAY_SIZE(info), "%d", revision);
 	setenv("board_rev", info);
+}
+#endif
+
+#ifdef CONFIG_DISPLAY_BOARDINFO
+int checkboard(void)
+{
+	printf("\nBoard: ARTIK530 Raptor\n");
+
+	return 0;
 }
 #endif
 
@@ -121,47 +126,6 @@ static void get_sensorid(u32 revision)
 
 static void nx_phy_init(void)
 {
-	/* Set interrupt config */
-	nx_gpio_set_pad_function(0, 11, 0);
-	nx_gpio_set_output_enable(0, 11, 1);
-	nx_gpio_set_pad_function(0, 12, 0);	/* GPIO */
-
-	/* PHY reset */
-	nx_gpio_set_output_value(0, 12, 1);
-	nx_gpio_set_output_enable(0, 12, 1);
-
-	/* ALT FUNCTION - GMAC */
-	nx_gpio_set_pad_function(4, 7, 1);
-	nx_gpio_set_pad_function(4, 8, 1);
-	nx_gpio_set_pad_function(4, 9, 1);
-	nx_gpio_set_pad_function(4, 10, 1);
-	nx_gpio_set_pad_function(4, 11, 1);
-	nx_gpio_set_pad_function(4, 14, 1);
-	nx_gpio_set_pad_function(4, 15, 1);
-	nx_gpio_set_pad_function(4, 16, 1);
-	nx_gpio_set_pad_function(4, 17, 1);
-	nx_gpio_set_pad_function(4, 18, 1);
-	nx_gpio_set_pad_function(4, 19, 1);
-	nx_gpio_set_pad_function(4, 20, 1);
-	nx_gpio_set_pad_function(4, 21, 1);
-	nx_gpio_set_pad_function(4, 24, 1);
-
-	/* PAD STRENGTH */
-	nx_gpio_set_drive_strength(4, 7, 3);
-	nx_gpio_set_drive_strength(4, 8, 3);
-	nx_gpio_set_drive_strength(4, 9, 3);
-	nx_gpio_set_drive_strength(4, 10, 3);
-	nx_gpio_set_drive_strength(4, 11, 3);
-	nx_gpio_set_drive_strength(4, 14, 3);
-	nx_gpio_set_drive_strength(4, 15, 3);
-	nx_gpio_set_drive_strength(4, 16, 3);
-	nx_gpio_set_drive_strength(4, 17, 3);
-	nx_gpio_set_drive_strength(4, 18, 0);	/* RX clk */
-	nx_gpio_set_drive_strength(4, 19, 3);
-	nx_gpio_set_drive_strength(4, 20, 3);
-	nx_gpio_set_drive_strength(4, 21, 3);
-	nx_gpio_set_drive_strength(4, 24, 3);	/* TX clk */
-
 #ifdef CONFIG_SENSORID_ARTIK
 	/* I2C-GPIO for AVR */
 	nx_gpio_set_pad_function(1, 11, 2);
@@ -169,43 +133,10 @@ static void nx_phy_init(void)
 #endif
 }
 
-void serial_clock_init(void)
-{
-	char dev[10];
-	int id;
-
-	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX);
-	id = RESET_ID_UART0 + CONFIG_CONS_INDEX;
-
-	struct clk *clk = clk_get((const char *)dev);
-
-	/* reset control: Low active ___|---   */
-	nx_rstcon_setrst(id, RSTCON_ASSERT);
-	udelay(10);
-	nx_rstcon_setrst(id, RSTCON_NEGATE);
-	udelay(10);
-
-	/* set clock   */
-	clk_disable(clk);
-	clk_set_rate(clk, CONFIG_PL011_CLOCK);
-	clk_enable(clk);
-}
-
 /* call from u-boot */
 int board_early_init_f(void)
 {
-	serial_clock_init();
 	return 0;
-}
-
-void board_gpio_init(void)
-{
-	nx_gpio_initialize();
-	nx_gpio_set_base_address(0, (void *)PHY_BASEADDR_GPIOA);
-	nx_gpio_set_base_address(1, (void *)PHY_BASEADDR_GPIOB);
-	nx_gpio_set_base_address(2, (void *)PHY_BASEADDR_GPIOC);
-	nx_gpio_set_base_address(3, (void *)PHY_BASEADDR_GPIOD);
-	nx_gpio_set_base_address(4, (void *)PHY_BASEADDR_GPIOE);
 }
 
 int mmc_get_env_dev(void)
@@ -226,24 +157,14 @@ int mmc_get_env_dev(void)
 	return -1;
 }
 
-void l2_cache_en(void)
-{
-	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_0, 1);
-	nx_tieoff_set(NX_TIEOFF_CORTEXA9MP_TOP_QUADL2C_L2RET1N_1, 1);
-}
-
 int board_init(void)
 {
-	board_gpio_init();
-
 #ifdef CONFIG_REVISION_TAG
 	check_hw_revision();
 	printf("HW Revision:\t%d\n", board_rev);
 #endif
 
 	nx_phy_init();
-
-	l2_cache_en();
 
 	return 0;
 }
@@ -316,6 +237,16 @@ void pmic_init(void)
 	ret = pmic_write(dev, NXE2000_REG_DC4CTL2, &bit_mask, 1);
 	if (ret)
 		printf("Can't write PMIC register: %d!\n", NXE2000_REG_DC4CTL2);
+
+	bit_mask = ((1 << NXE2000_POS_LDOEN1_LDO1EN) |
+			(1 << NXE2000_POS_LDOEN1_LDO2EN) |
+			(1 << NXE2000_POS_LDOEN1_LDO3EN) |
+			(0 << NXE2000_POS_LDOEN1_LDO4EN) |
+			(0 << NXE2000_POS_LDOEN1_LDO5EN));
+	ret = pmic_write(dev, NXE2000_REG_LDOEN1, &bit_mask, 1);
+	if (ret)
+		printf("Can't write PMIC register: %d!\n", NXE2000_REG_LDOEN1);
+
 }
 #endif
 
@@ -338,14 +269,18 @@ int board_late_init(void)
 }
 
 #ifdef CONFIG_USB_GADGET
-struct dwc2_plat_otg_data s5p4418_otg_data = {
-	.regs_phy	= PHY_BASEADDR_TIEOFF,
-	.regs_otg	= PHY_BASEADDR_HSOTG,
-};
-
-int board_usb_init(int index, enum usb_init_type init)
+int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
 {
-	debug("USB_udc_probe\n");
-	return dwc2_udc_probe(&s5p4418_otg_data);
+	if (!strcmp(name, "usb_dnl_thor")) {
+		put_unaligned(CONFIG_G_DNL_THOR_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_THOR_PRODUCT_NUM, &dev->idProduct);
+	} else if (!strcmp(name, "usb_dnl_ums")) {
+		put_unaligned(CONFIG_G_DNL_UMS_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_UMS_PRODUCT_NUM, &dev->idProduct);
+	} else {
+		put_unaligned(CONFIG_G_DNL_VENDOR_NUM, &dev->idVendor);
+		put_unaligned(CONFIG_G_DNL_PRODUCT_NUM, &dev->idProduct);
+	}
+	return 0;
 }
 #endif

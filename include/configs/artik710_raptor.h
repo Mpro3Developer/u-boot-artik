@@ -54,7 +54,7 @@
 
 /* board_init_f */
 #define	CONFIG_SYS_SDRAM_BASE			0x40000000
-#define	CONFIG_SYS_SDRAM_SIZE			0x38000000
+#define	CONFIG_SYS_SDRAM_SIZE			0x3DF00000
 
 /* dram 1 bank num */
 #define CONFIG_NR_DRAM_BANKS			1
@@ -369,6 +369,7 @@
 		"fi; "							\
 		"else ext4load mmc $rootdev:$bootpart $fdtaddr $fdtfile; "	\
 		"fi;\0"							\
+	"bootdelay=" __stringify(CONFIG_BOOTDELAY) "\0"			\
 	"console=" CONFIG_DEFAULT_CONSOLE				\
 	"consoleon=setenv console=" CONFIG_DEFAULT_CONSOLE		\
 		"; saveenv; reset\0"					\
@@ -410,7 +411,7 @@
 	"recovery_cmd=run sdrecovery; setenv recoverymode recovery\0"	\
 	"recoveryboot=run recovery_cmd; run ramfsboot\0"		\
 	"hwtestboot=setenv rootdev 1;"					\
-		"setenv opts rootfstype=ext4 rootwait loglevel=7;"	\
+		"setenv opts rootfstype=ext4 rootwait loglevel=4;"	\
 		"setenv fdtfile s5p6818-artik710-explorer.dtb; "	\
 		"run mmcboot\0"						\
 	"hwtest_recoveryboot=run recovery_cmd; run hwtestboot\0"	\

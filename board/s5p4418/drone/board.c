@@ -13,14 +13,7 @@
 #include <asm/io.h>
 
 #include <asm/arch/nexell.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/reset.h>
 #include <asm/arch/nx_gpio.h>
-
-#ifdef CONFIG_USB_GADGET
-#include <usb.h>
-#include <usb/dwc2_udc.h>
-#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -28,32 +21,9 @@ DECLARE_GLOBAL_DATA_PTR;
  * intialize nexell soc and board status.
  */
 
-void serial_clock_init(void)
-{
-	char dev[10];
-	int id;
-
-	sprintf(dev, "nx-uart.%d", CONFIG_CONS_INDEX);
-	id = RESET_ID_UART0 + CONFIG_CONS_INDEX;
-
-	struct clk *clk = clk_get((const char *)dev);
-
-	/* reset control: Low active ___|---   */
-	nx_rstcon_setrst(id, RSTCON_ASSERT);
-	udelay(10);
-	nx_rstcon_setrst(id, RSTCON_NEGATE);
-	udelay(10);
-
-	/* set clock   */
-	clk_disable(clk);
-	clk_set_rate(clk, CONFIG_PL011_CLOCK);
-	clk_enable(clk);
-}
-
 /* call from u-boot */
 int board_early_init_f(void)
 {
-	serial_clock_init();
 	return 0;
 }
 
@@ -115,18 +85,3 @@ int board_late_init(void)
 	return 0;
 }
 
-#ifdef CONFIG_USB_GADGET
-struct dwc2_plat_otg_data s5p4418_otg_data = {
-	.phy_control	= NULL,
-	.regs_phy	= PHY_BASEADDR_TIEOFF,
-	.regs_otg	= PHY_BASEADDR_HSOTG,
-	.usb_phy_ctrl	= NULL,
-	.usb_flags	= NULL,
-};
-
-int board_usb_init(int index, enum usb_init_type init)
-{
-	debug("USB_udc_probe\n");
-	return dwc2_udc_probe(&s5p4418_otg_data);
-}
-#endif

@@ -321,8 +321,7 @@ static int mmc_part_write(struct fastboot_part *fpart, void *buf,
 		p = sprintf(cmd, "ext4_img_write %d %p %d %x",
 			    dev, buf, fpart->part_num, (unsigned int)length);
 		ret = run_command(cmd, 0);
-		if (ret < 0)
-			printf("Flash : %s\n", (ret < 0) ? "FAIL" : "DONE");
+		printf("Flash : %s\n", (ret < 0) ? "FAIL" : "DONE");
 		return ret;
 	}
 
@@ -463,9 +462,6 @@ static int parse_part_device(const char *parts, const char **ret,
 	char str[32];
 	int i = 0, id_len;
 
-	if (ret)
-		*ret = NULL;
-
 	p = parts;
 	id = p;
 
@@ -532,9 +528,6 @@ static int parse_part_partition(const char *parts, const char **ret,
 	char str[32] = { 0, };
 	int i = 0;
 
-	if (ret)
-		*ret = NULL;
-
 	p = parts;
 	id = p;
 
@@ -589,9 +582,6 @@ static int parse_part_fs(const char *parts, const char **ret,
 	char str[16] = { 0, };
 	int i = 0;
 
-	if (ret)
-		*ret = NULL;
-
 	p = parts;
 	id = p;
 
@@ -634,9 +624,6 @@ static int parse_part_address(const char *parts, const char **ret,
 	const char *p, *id;
 	char str[64] = { 0, };
 	int id_len;
-
-	if (ret)
-		*ret = NULL;
 
 	p = parts;
 	id = p;
@@ -706,8 +693,21 @@ static inline void part_lists_init(int init)
 
 	for (i = 0; FASTBOOT_DEV_SIZE > i; i++, fd++) {
 		struct list_head *head = &fd->link;
+		if (head->next == NULL)
+			INIT_LIST_HEAD(head);
 
 		if (init) {
+			if (!list_empty(head)) {
+				debug("delete [%s]:", fd->device);
+				list_for_each_safe(entry, n, head) {
+					fp = list_entry(entry, struct fastboot_part, link);
+					debug("%s ", fp->partition);
+					list_del(entry);
+					free(fp);
+				}
+			}
+			debug("\n");
+
 			INIT_LIST_HEAD(head);
 			memset(fd->parts, 0x0, sizeof(FASTBOOT_DEV_PART_MAX*2));
 			continue;
@@ -747,24 +747,23 @@ static int part_lists_make(const char *ptable_str, int ptable_str_len)
 
 	/* new parts table */
 	while (1) {
-		fd = f_devices;
-		fp = malloc(sizeof(*fp));
-
-		if (!fp) {
-			printf("* Can't malloc fastboot part table entry *\n");
-			err = -1;
-			break;
-		}
-
 		if (parse_part_head(p, &p)) {
 			if (err)
 				printf("-- unknown parts head: [%s]\n", p);
 			break;
 		}
 
+		fp = malloc(sizeof(*fp));
+		if (!fp) {
+			printf("* Can't malloc fastboot part table entry *\n");
+			err = -1;
+			break;
+		}
+
 		for (p_fnc_ptr = parse_part_seqs; *p_fnc_ptr; ++p_fnc_ptr) {
 			if ((*p_fnc_ptr)(p, &p, &fd, fp) != 0) {
 				err = -1;
+				free(fp);
 				goto fail_parse;
 			}
 		}
@@ -1403,7 +1402,7 @@ static int fastboot_set_alt(struct usb_function *f,
 		ret = usb_ep_enable(f_fb->in_ep, &hs_ep_in);
 		is_high_speed = true;
 	} else {
-		ret = usb_ep_enable(f_fb->out_ep, &fs_ep_in);
+		ret = usb_ep_enable(f_fb->in_ep, &fs_ep_in);
 		is_high_speed = false;
 	}
 	if (ret) {
@@ -1870,6 +1869,8 @@ err_flash:
 done_flash:
 	fastboot_flash_session_id++;
 	fastboot_tx_write_str(response);
+
+	part_lists_init(0);
 }
 #endif
 
