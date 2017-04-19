@@ -138,7 +138,7 @@
 #define PHYS_SDRAM_12_SIZE       (SDRAM_BANK_SIZE -                            \
                                                CONFIG_TRUSTZONE_RESERVED_DRAM)
 
-#define CONFIG_IDENT_STRING		" for ARTIK10"
+#define CONFIG_IDENT_STRING		" for ARTIK10 (mpro3-u-boot)"
 
 #define CFG_PARTITION_START	0x4000000
 #define CONFIG_IRAM_STACK	0x02074000
