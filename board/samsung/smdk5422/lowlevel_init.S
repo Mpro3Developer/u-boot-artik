@@ -52,7 +52,7 @@ lowlevel_init:
 	str	r1, [r0]
 #endif
 
-	/* set IPA power parameter */
+	/* set IPA power parameter (IPA - Intelligent Power Allocation) */
 	ldr	r0, =0x10040820 /* PMU SYSIP2 DAT0 */
 	ldr	r1, =((57 << 16) | (11 << 0))   /* 0x0039000B */
 	str	r1, [r0]
