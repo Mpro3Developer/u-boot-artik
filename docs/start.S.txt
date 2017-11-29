@@ -1,0 +1,15 @@
+This is the entry point from BL1
+Performs ARM specific common intitialization, call board target specific initializations
+
+[_start] Performs:
+
+reset:
+Save boot params: r0, r1, r2, r3
+Set the cpu to SVC32 mode aka supervisor mode
+Reset vector table and CP15 processsor initializtion
+Call board/vendor/product specific init code from lowlevel_init
+Relocate in RAM the _start code case it is not alocated (??platform/arch/etc can alocate different code in sections??)
+Stack Setup for the handlers states exceptions
+Jump to little kernel main kernel/main.c
+
+

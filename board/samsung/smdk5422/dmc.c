@@ -15,6 +15,10 @@
 
  */
 
+   /**
+	* Dynamic Memory Controller
+	**/
+
 #include <config.h>
 #include <asm/arch/smc.h>
 #include "util.h"
@@ -478,7 +482,7 @@ void Low_frequency_init_lpddr3(u32 PHY_address, u32 DREX_address, u32 nMEMCLK)
 		Outp32( PHY_address+0x0028, 0x0000007F );	// ctrl_offsetd[7:0]=0x7F
 
 		// 4. Set ctrl_offsetr, crtrl_offsetw to 0x7F
-		Outp32( PHY_address+0x0010, 0x7F7F7F7F );	// PHY_CON4 ctrl_offsetr, MEM1 Port 0, Read Leveling Manual Value, ¡Ú Best Tuning Value
+		Outp32( PHY_address+0x0010, 0x7F7F7F7F );	// PHY_CON4 ctrl_offsetr, MEM1 Port 0, Read Leveling Manual Value, ï¿½ï¿½ Best Tuning Value
 		Outp32( PHY_address+0x0018, 0x7F7F7F7F );	// PHY_CON6 ctrl_offsetw, MEM1 Port 0, Write Training Manual Value
 
 		// 5. set CA deskew code to 7h'60
@@ -739,7 +743,7 @@ void Low_frequency_init_lpddr3(u32 PHY_address, u32 DREX_address, u32 nMEMCLK)
 		Outp32( PHY_address+0x0028, 0x00000008); // PHY_CON10 ctrl_offsetd[7:0]=0x8
 
 		// 4. Set ctrl_offsetr, crtrl_offsetw to 0x7F
-		Outp32( PHY_address+0x0010, 0x08080808); // PHY_CON4 ctrl_offsetr, MEM1 Port 0, Read Leveling Manual Value, ¡Ú Best Tuning Value
+		Outp32( PHY_address+0x0010, 0x08080808); // PHY_CON4 ctrl_offsetr, MEM1 Port 0, Read Leveling Manual Value, ï¿½ï¿½ Best Tuning Value
 		Outp32( PHY_address+0x0018, 0x08080808); // PHY_CON5 ctrl_offsetw, MEM1 Port 0, Write Training Manual Value
 
 		// 5. set CA deskew code to 7h'60
@@ -1050,7 +1054,7 @@ void High_frequency_init_lpddr3(u32 PHY_address, u32 DREX_address, u32 TZASC_add
 	// T_WrWrCmd	[30:24] 	It controls the interval between Write and Write during DQ Calibration. This value should be always kept by 5'h17. It will be used for debug purpose.
 	// T_WrRdCmd	[19:17] 	It controls the interval between Write and Read by cycle unit during Write Calibration. It will be used for debug purpose. 3'b111 : tWTR = 6 cycles (=3'b001)
 	// ctrl_ddr_mode[12:11] 	2'b11: LPDDR3
-	// ctrl_dfdqs[9] 	1¡¯b1: differential DQS
+	// ctrl_dfdqs[9] 	1ï¿½ï¿½b1: differential DQS
 	Outp32( PHY_address+0x0000, 0x17021A00); // PHY_CON0 byte_rdlvl_en[13]=1, ctrl_ddr_mode[12:11]=01, ctrl_atgate[6]=1, Bit Leveling
 
 	if( PERFORM_LEVELING == 1)
@@ -1094,7 +1098,7 @@ void High_frequency_init_lpddr3(u32 PHY_address, u32 DREX_address, u32 TZASC_add
 		Outp32( PHY_address+0x0028, 0x0000007F );	// ctrl_offsetd[7:0]=0x7F
 
 		// 4. Set ctrl_offsetr, crtrl_offsetw to 0x7F
-		Outp32( PHY_address+0x0010, 0x7F7F7F7F );	// PHY_CON4 ctrl_offsetr, MEM1 Port 0, Read Leveling Manual Value, ¡Ú Best Tuning Value
+		Outp32( PHY_address+0x0010, 0x7F7F7F7F );	// PHY_CON4 ctrl_offsetr, MEM1 Port 0, Read Leveling Manual Value, ï¿½ï¿½ Best Tuning Value
 		Outp32( PHY_address+0x0018, 0x7F7F7F7F );	// PHY_CON6 ctrl_offsetw, MEM1 Port 0, Write Training Manual Value
 
 		// 5. set CA deskew code to 7h'60
@@ -1334,7 +1338,7 @@ void DMC_InitForLPDDR3(u32 nMEMCLK)
 
 
 		#if 0
-		// (6) DDR self-refresh ExitÀ» À§ÇÑ CMU ¼³Á¤
+		// (6) DDR self-refresh Exitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ CMU ï¿½ï¿½ï¿½ï¿½
 		//  - CLK_GATE_BUS_CDREX
 		//   0x10030700[7:6] = 0x3
 		//data = Inp32( 0x10030700 );
@@ -1359,7 +1363,7 @@ void DMC_InitForLPDDR3(u32 nMEMCLK)
 		}
 		#endif
 
-		// (7) LPI Masking ¼³Á¤
+		// (7) LPI Masking ï¿½ï¿½ï¿½ï¿½
 		// LPI_MASK0[0x1004_0004] = 0x7000
 		// LPI_MASK1[0x1004_0008] = 0x30
 		// LPI_MASK2[0x1004_000C] = 0x0
