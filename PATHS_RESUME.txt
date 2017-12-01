@@ -8,7 +8,8 @@
 -board [board specific code]
     - samsung
         - sdmk5422
-            - lowlevel_init.S [board specific initializations]
+            - lowlevel_init.S [board specific initializations, clock, memory]
+            - smc.c [secure monitor calls convention]
 -common
 -disk
 -doc

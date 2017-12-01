@@ -1,0 +1,23 @@
+Lowlevel setup for SMDK5422 board based on EXYNOS5
+
+lowlevel_init: performs
+
+PS-HOLD high, Set ps_hold data driving value high, this enables the machine to stay powered on after the initial power-on condition goes away (e.g. power button).
+Setup IPA power parameter (IPA - Intelligent Power Allocation)
+Enable WAS, Write Assist in Low-Voltage to save power and prevent bit flip in write SRAM operations
+Setup stack pointer to iRAM
+Setup boot CPU to reset state
+Alocate code in non secure area of memory
+Setup stack and handlers for wakeup events for:
+    ARM Off Top Running (AFTR): Cores is power gated;
+    Low Power Audio (LPA): Cores is power gated, but the Audio-subsystem remains on;
+    Sleep mode: power off all blocks, except the RealTimeClock blocks;
+Setup PMIC board/samsung/SMDK5422/pmic.c see pmic.c.txt
+Setup companion PMIC board/samsung/SMDK5422/companion_pmic.c see companion_pmic.c.txt
+Read the boot XOM pin to see from where we are booting
+Check if u-boot is already alocated in memory then jump to it, if not then continue to
+Setup clock board/samsung/SMDK5422/clock_init.c see clock_init.c.txt
+Setup Dynamic Memory Controller see dmc.c.txt
+Setup TrustZone Protection Controller see tzpc_init.clock
+
+

@@ -57,7 +57,7 @@ lowlevel_init:
 	ldr	r1, =((57 << 16) | (11 << 0))   /* 0x0039000B */
 	str	r1, [r0]
 
-	/* enable WAS */
+	/* enable WAS (Write Assist Control)*/
 	ldr r0, =0x10011008
 	ldr r1, [r0]
 	orr r1, r1, #0x1000
@@ -75,12 +75,12 @@ lowlevel_init:
 	ldr	r0, =(EXYNOS5_POWER_BASE + INFORM1_OFFSET)
 	ldr	r1, [r0]
 
-	/* AFTR wakeup reset */
+	/* AFTR (ARM Off Top Running) wakeup reset */
 	ldr	r2, =S5P_CHECK_DIDLE
 	cmp	r1, r2
 	beq	exit_wakeup
 
-	/* LPA wakeup reset */
+	/* LPA (Low Power Audio) wakeup reset */
 	ldr	r2, =S5P_CHECK_LPA
 	cmp	r1, r2
 	beq	exit_wakeup
@@ -197,9 +197,10 @@ read_om:
 	mov	pc, lr
 
 set_cpu_state:
+	/* mcr instructions send commands to a coprocessor */
 	/* read boot cluster */
 	adr     r0, _cpu_state
-	mrc     p15, 0, r1, c0, c0, 5   @ read MPIDR
+	mrc     p15, 0, r1, c0, c0, 5   @ read MPIDR (Multiprocessor Affinity Register)
 	ubfx    r1, r1, #8, #4          @ r1 = cluster id
 
 	/* set reset flag at _cpu_state of boot cpu */
