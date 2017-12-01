@@ -65,7 +65,7 @@ lowlevel_init:
 
 	/* use iRAM stack in bl2 */
 	ldr	sp, =CONFIG_IRAM_STACK
-	stmdb	r13!, {ip,lr}
+	stmdb	r13!, {ip,lr} 	/* store ip and LR for back to start.S */
 
 	bl	set_cpu_state
 
@@ -125,7 +125,7 @@ lowlevel_init:
 #endif
 
 1:
-	ldmia	r13!, {ip,pc}
+	ldmia	r13!, {ip,pc} /* reload stack and back to start.S */
 
 wakeup_reset:
 	bl	start_mct_frc

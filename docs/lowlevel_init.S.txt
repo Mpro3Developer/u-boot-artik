@@ -15,9 +15,8 @@ Setup stack and handlers for wakeup events for:
 Setup PMIC board/samsung/SMDK5422/pmic.c see pmic.c.txt
 Setup companion PMIC board/samsung/SMDK5422/companion_pmic.c see companion_pmic.c.txt
 Read the boot XOM pin to see from where we are booting
-Check if u-boot is already alocated in memory then jump to it, if not then continue to
+Check if u-boot is already alocated in memory then is not necessary setup sdram, if not then continue to
 Setup clock board/samsung/SMDK5422/clock_init.c see clock_init.c.txt
-Setup Dynamic Memory Controller see dmc.c.txt
+Setup Dynamic Memory Controller sdram see dmc.c.txt
 Setup TrustZone Protection Controller see tzpc_init.clock
-
-
+Return to cpu_init_crit see start.S.txt
