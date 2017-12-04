@@ -1,0 +1,20 @@
+This have functions to Copy U-boot from mmc to RAM
+This appear to be a BL2 code
+
+[board_init_f] performs:
+
+Setup __atribute__ to uboot function to noreturn
+Call load_uboot
+
+[load_uboot] performs:
+
+Read from where we are loading binaries, om_status (mmc, sdcard, usb)
+Call copy_uboot_to_ram passing om_status as parameter
+
+[copy_uboot_to_ram] performs:
+
+Call load_uboot_image passing om_status as parameter, see smc.c.txt
+Check if the return from load_uboot_image is ok, if not the binarie signature is not valid then try to load_uboot_image from second boot_dev, if signature continues fail then hang
+Call coldboot Load tzsw image, see smc.c.txt
+Check if the return from coldboot is ok, if not the binarie signature is not valid then try to load coldboot from second boot_dev, if signature continues fail then hang
+If the coldboot secure monitor call is ok then the trustzone OS make the copy of binarie to RAM and made the jump to U-BOOT LIKE MAGIC

@@ -8,7 +8,7 @@ Save boot params: r0, r1, r2, r3
 Set the cpu to SVC32 mode aka supervisor mode
 Reset vector table and CP15 processsor initializtion
 Call board/vendor/product specific init code from lowlevel_init, see lowlevel_init.S.txt
-Call board/vendor/product/mmc_boot.c board_init_f, see mmc_boot.c.txt
+Call board/vendor/product/mmc_boot.c board_init_f who load and jump to u-boot code, see mmc_boot.c.txt
 
 [misc]
 Defines Interrup Handlers:

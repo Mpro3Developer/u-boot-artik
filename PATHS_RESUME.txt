@@ -1,13 +1,15 @@
 -api
 -arch [platform specific files for archictecture]
     - arm
-     - cpu [arm cpu types]
-        - armv7 [exynos5422 is armv7 processor]
-            - start.S [entry point from BL1]
-            - exynos [samsung exynos specific archictecture initializations]
+        - cpu [arm cpu types]
+            - armv7 [exynos5422 is armv7 processor]
+                - start.S [entry point from BL1]
+                - exynos [samsung exynos specific archictecture initializations]
+        - lib [u-boot API]
+            - board.c [board_init_f init function chain]
 -board [board specific code]
     - samsung
-        - sdmk5422
+        - sdmk5422 [this folder appear to have BL2 code with secure check for load u-boot]
             - lowlevel_init.S [board specific initializations, clock, memory]
             - smc.c [secure monitor calls convention]
 -common

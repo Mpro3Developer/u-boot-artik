@@ -126,6 +126,8 @@ unsigned int coldboot(u32 boot_device)
 
 	}
 
+	/* this secure monitor call made the load of TrustZone SW in RAM and jump to u-boot code */
+	/* How this made it? MAGIC MAN */
 	return exynos_smc(SMC_CMD_COLDBOOT, boot_device,
 			CONFIG_IMAGE_INFO_BASE, CONFIG_PHY_IRAM_NS_BASE);
 #else
