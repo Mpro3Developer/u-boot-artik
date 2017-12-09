@@ -98,15 +98,16 @@
 #define PHASE_DEVIDER		4
 
 /* Boot configuration */
-#define BOOT_ONENAND		0x1
+#define BOOT_ONENAND	0x1
 #define BOOT_NAND		0x40000
 #define BOOT_MMCSD		0x3
 #define BOOT_NOR		0x4
-#define BOOT_SEC_DEV		0x5
+#define BOOT_SEC_DEV	0x5
 #define BOOT_EMMC		0x6
-#define BOOT_EMMC_4_4		0x7
-#define BOOT_EMMC_5_0		BOOT_EMMC_4_4
-#define BOOT_USB                0x100
+#define BOOT_EMMC_4_4	0x7
+#define BOOT_EMMC_5_0	BOOT_EMMC_4_4
+#define BOOT_USB        0x100
+#define BOOT_UNDEF      0x8
 
 /*
  *  Boot device
