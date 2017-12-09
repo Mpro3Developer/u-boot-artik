@@ -47,7 +47,7 @@ static int find_second_boot_dev(void)
 	else if (om_status == EMMC_USB_SECOND_DEV)
 		return BOOT_USB;
 	else
-		while (1);
+		return BOOT_UNDEF;
 
 	return 0;
 }
@@ -66,6 +66,9 @@ void copy_uboot_to_ram(unsigned int boot_dev)
 			break;
 		case BOOT_USB:
 			boot_dev = USB;
+			break;
+		case BOOT_UNDEF:
+			while(1); // HANG MAN
 			break;
 	}
 	/* Load u-boot image to ram */
