@@ -18,5 +18,5 @@ Read the boot XOM pin to see from where we are booting
 Check if u-boot is already alocated in memory then is not necessary setup sdram, if not then continue to
 Setup clock board/samsung/SMDK5422/clock_init.c see clock_init.c.txt
 Setup Dynamic Memory Controller sdram see dmc.c.txt
-Setup TrustZone Protection Controller see tzpc_init.clock
+Setup TrustZone Protection Controller see tzpc_init.c.txt
 Return to cpu_init_crit see start.S.txt
