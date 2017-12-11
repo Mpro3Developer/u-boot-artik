@@ -264,7 +264,7 @@ void board_init_f(ulong bootflag)
 	ulong reg;
 #endif
 
-#ifdef CONFIG_SKIP_LOWLEVEL_INIT
+#ifndef CONFIG_SKIP_LOWLEVEL_INIT
 	to_hang();
 #endif
 
