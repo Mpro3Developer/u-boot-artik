@@ -157,6 +157,8 @@ reset:
 	bl	cpu_init_crit
 #endif
 
+	bl	to_hang
+
 /* Set stackpointer in internal RAM to call board_init_f */
 call_board_init_f:
 	ldr	sp, =(CONFIG_SYS_INIT_SP_ADDR)
@@ -362,6 +364,12 @@ ENTRY(cpu_init_crit)
 	mov	lr, ip			@ restore link
 	mov	pc, lr			@ back to my caller
 ENDPROC(cpu_init_crit)
+#endif
+
+#ifndef CONFIG_SKIP_LOWLEVEL_INIT
+ENTRY(to_hang)
+	mov	pc, lr
+ENDPROC(to_hang)
 #endif
 
 #ifndef CONFIG_SPL_BUILD
