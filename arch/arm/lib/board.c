@@ -264,6 +264,10 @@ void board_init_f(ulong bootflag)
 	ulong reg;
 #endif
 
+#ifdef CONFIG_SKIP_LOWLEVEL_INIT
+	to_hang();
+#endif
+
 	bootstage_mark_name(BOOTSTAGE_ID_START_UBOOT_F, "board_init_f");
 
 	/* Pointer is writable since we allocated a register for it */
